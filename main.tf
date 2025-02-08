@@ -76,12 +76,20 @@ resource "aws_security_group" "springboot_sg" {
   }
 }
 
+
+resource "aws_key_pair" "springboot_key" {
+  key_name   = "springboot-key"
+  public_key = file("~/.ssh/ec2-key.pub")
+}
+
+
 # EC2 Instance
 resource "aws_instance" "springboot_ec2" {
   ami                    = "ami-085ad6ae776d8f09c"  # Change to the latest Amazon Linux 2 AMI
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.springboot_subnet.id
   vpc_security_group_ids = [aws_security_group.springboot_sg.id]
+  key_name               = aws_key_pair.springboot_key.key_name
 
   # Bootstrap script to install Java 17 and Git
   user_data = <<-EOF
